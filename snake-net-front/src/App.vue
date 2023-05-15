@@ -22,7 +22,7 @@
 import { ref, computed, onBeforeMount, onMounted, reactive } from "vue";
 import { io } from "socket.io-client";
 
-let socket = io('', { autoConnect: false })
+let socket = io('ws://localhost:3000', { autoConnect: false })
 // 移动Interval
 let moveInterval = null;
 // 移动方向
@@ -73,6 +73,9 @@ onMounted(() => {
   window.document.onkeydown = (e) => {
     const keyNum = window.event ? e.keyCode : e.which;
     // console.log(keyNum);
+    if(step.length > 2) {
+      return
+    }
     switch (keyNum) {
       case 37:
       case 65:
@@ -154,8 +157,10 @@ function init() {
       })
 
       // 创建一块食物
-      foods.value.push(createFood())
-      socket.emit('ts_food_update', foods.value)
+      if(foods.value.length < Object.keys(snakes.value).length) {
+        foods.value.push(createFood())
+        socket.emit('ts_food_update', foods.value)
+      }
 
       // 开始游戏
       startGame()
@@ -258,9 +263,11 @@ function moveAction() {
   } else {
     // 食物被吃
     foods.value.splice(foodIndex, 1);
-    foods.value.push(createFood());
 
-    socket.emit('ts_food_update', foods.value)
+    if(foods.value.length < Object.keys(snakes.value).length) {
+      foods.value.push(createFood());
+      socket.emit('ts_food_update', foods.value)
+    }
 
     score.value++;
   }
