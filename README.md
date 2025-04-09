@@ -4,9 +4,6 @@
 - 后端: express + socket.io
 - 前端: Vite + Vue3 + socket.io-client
 
-## 示例地址
-
-`http://snake.imbulv.cloud`
 
 ## 前端
 
